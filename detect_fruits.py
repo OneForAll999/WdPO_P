@@ -7,28 +7,7 @@ import cv2
 from tqdm import tqdm
 
 
-def detect_fruits(img_path: str) -> Dict[str, int]:
-    """Fruit detection function, to implement.
-
-    Parameters
-    ----------
-    img_path : str
-        Path to processed image.
-
-    Returns
-    -------
-    Dict[str, int]
-        Dictionary with quantity of each fruit.
-    """
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    img = cv2.resize(img, (0, 0), fx=0.3, fy=0.3)
-    img = cv2.GaussianBlur(img, (5, 5), 0)
-
-    h, w, d = img.shape
-    if h > w:
-        img = cv2.rotate(img, cv2.cv2.ROTATE_90_CLOCKWISE)
-
+def HSV_IMG(img):
     def nothing(x):
         pass
 
@@ -59,8 +38,8 @@ def detect_fruits(img_path: str) -> Dict[str, int]:
 
         res = cv2.bitwise_and(img, img, mask=mask)
 
-        cv2.imshow("frame", img)
-        cv2.imshow("mask", mask)
+        # cv2.imshow("frame", img)
+        # cv2.imshow("mask", mask)
         cv2.imshow("res", res)
 
         key = cv2.waitKey(1)
@@ -71,6 +50,56 @@ def detect_fruits(img_path: str) -> Dict[str, int]:
 
     cv2.destroyAllWindows()
 
+
+def detect_fruits(img_path: str) -> Dict[str, int]:
+    """Fruit detection function, to implement.
+    Parameters
+    ----------
+    img_path : str
+        Path to processed image.
+    Returns
+    -------
+    Dict[str, int]
+        Dictionary with quantity of each fruit.
+    """
+    # orange
+    img_orange = cv2.imread(img_path)
+    img_orange = cv2.cvtColor(img_orange, cv2.COLOR_BGR2HSV)
+    img_orange = cv2.resize(img_orange, (0, 0), fx=0.3, fy=0.3)
+    img_orange = cv2.GaussianBlur(img_orange, (11, 11), 0)
+
+    h, w, d = img_orange.shape
+    if h > w:
+        img_orange = cv2.rotate(img_orange, cv2.cv2.ROTATE_90_CLOCKWISE)
+    #HSV_IMG(img_orange)
+    hsv = cv2.cvtColor(img_orange, cv2.COLOR_BGR2HSV)
+    l_b = np.array([20, 237, 223])
+    u_b = np.array([255, 255, 255])
+
+    mask = cv2.inRange(hsv, l_b, u_b)
+    res = cv2.bitwise_and(img_orange, img_orange, mask=mask)
+    res = cv2.cvtColor(res, cv2.COLOR_HSV2BGR)
+    to_show = res
+    res = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+
+    ret, thresh = cv2.threshold(res, 90, 255, 0)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(to_show, contours, -1, (0, 255, 0), 3)
+
+    cv2.imshow('res', to_show)
+    cv2.waitKey(0)
+    #
+
+    # circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
+    #                           param1=50, param2=30, minRadius=0, maxRadius=0)
+    # circles = np.uint16(np.around(circles))
+    # for i in circles[0, :]:
+    #     # draw the outer circle
+    #     cv2.circle(cimg, (i[0], i[1]), i[2], (0, 255, 0), 2)
+    #     # draw the center of the circle
+    #     cv2.circle(cimg, (i[0], i[1]), 2, (0, 0, 255), 3)
+    # cv2.imshow('detected circles', cimg)
+    # cv2.waitKey(0)
     # #Banan
     # H_l = 19
     # S_l = 100
@@ -85,12 +114,6 @@ def detect_fruits(img_path: str) -> Dict[str, int]:
     # cv2.imshow('orange', output_orange)
     # cv2.waitKey(0)
     # ORange
-    banan_lower = np.array(L_HSV, np.uint8)
-    banan_upper = np.array(H_HSV, np.uint8)
-    banan_mask = cv2.inRange(img, banan_lower, banan_upper)
-    output_orange = cv2.bitwise_and(img, img, mask=banan_mask)
-    cv2.imshow('orange', output_orange)
-    cv2.waitKey(0)
 
     # TODO: Implement detection method.
 
