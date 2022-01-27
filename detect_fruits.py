@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 
 #komentarz
+#jajebie
 
 def HSV_IMG(img):
     def nothing(x):
