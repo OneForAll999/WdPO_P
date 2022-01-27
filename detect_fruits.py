@@ -7,6 +7,8 @@ import cv2
 from tqdm import tqdm
 
 
+#komentarz
+
 def HSV_IMG(img):
     def nothing(x):
         pass
